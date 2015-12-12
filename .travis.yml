@@ -20,3 +20,6 @@ android:
 
 before_install:
  - chmod +x gradlew
+
+notifications:
+  slack: henriqueof:voDgzOCl72fBeRLIs1t1J3W1
