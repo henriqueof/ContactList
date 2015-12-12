@@ -1,3 +1,5 @@
+[![Stories in Ready](https://badge.waffle.io/henriqueof/ContactList.png?label=ready&title=Ready)](https://waffle.io/henriqueof/ContactList)
+[![Build Status](https://travis-ci.org/henriqueof/ContactList.svg?branch=master)](https://travis-ci.org/henriqueof/ContactList)
 # ContactList
 A implementation of a contact list with some features for design and code practice.
 
