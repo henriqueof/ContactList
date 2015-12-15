@@ -1,5 +1,8 @@
 package net.henriqueof.contactlist.Adapters;
 
+import android.content.ContentUris;
+import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,14 +15,18 @@ import net.henriqueof.contactlist.R;
 import java.util.List;
 
 /**
- * Created by henri on 06/12/2015.
+ * Created by Carlos Henrique on 06/12/2015.
  */
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHolder> {
-    List<Contact> ContactList;
+    Cursor mCursor = null;
+    int mNameColumnIndex, mIdColumnIndex;
+
     OnItemClickListener ItemClickListener = null;
 
-    public ContactsAdapter(List<Contact> ContactList) {
-        this.ContactList = ContactList;
+    public ContactsAdapter(Cursor cursor) {
+        mCursor = cursor;
+        mNameColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY);
+        mIdColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID);
     }
 
     @Override
@@ -31,12 +38,19 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.ContactName.setText(ContactList.get(position).getName());
+        // Extract info from cursor
+        mCursor.moveToPosition(position);
+        String contactName = mCursor.getString(mNameColumnIndex);
+        long contactId = mCursor.getLong(mIdColumnIndex);
+
+        // Create contact model and bind to ViewHolder
+        Contact contact = new Contact(contactName);
+        holder.ContactName.setText(contact.getName());
     }
 
     @Override
     public int getItemCount() {
-        return ContactList.size();
+        return mCursor.getCount();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

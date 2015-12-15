@@ -1,11 +1,11 @@
 package net.henriqueof.contactlist.Activities;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -25,21 +25,27 @@ import net.henriqueof.contactlist.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
-
+public class ContactListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     /*
      * Defines an array that contains column names to move from
      * the Cursor to the ListView.
      */
-    @SuppressLint("InlinedApi")
-    private final static String[] FROM_COLUMNS = {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
-                    ContactsContract.Contacts.DISPLAY_NAME
+    private final static String[] PROJECTION = {
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.Contacts._ID,
+            ContactsContract.Contacts.LOOKUP_KEY,
     };
 
+    // Defines the text expression
+    private static final String SELECTION = ContactsContract.Contacts.DISPLAY_NAME + " LIKE ?";
+
+    // Defines a variable for the search string
+    private String mSearchString;
+    // Defines the array to hold values that replace the ?
+    private String[] mSelectionArgs = { mSearchString };
+
     // An adapter that binds the result Cursor to the ListView
-    private SimpleCursorAdapter mCursorAdapter;
+    private Cursor mCursor;
 
     RecyclerView mRecyclerView = null;
     List<Contact> mContactList = null;
@@ -50,17 +56,16 @@ public class ContactListActivity extends AppCompatActivity implements LoaderMana
 
         setContentView(R.layout.activity_contact_list);
 
-        mContactList = new ArrayList<>();
-
-        for (int i = 0; i < 100; i++)
-            mContactList.add(new Contact("Contato Nº " + (i + 1)));
+        // Initializes the loader
+        getSupportLoaderManager().initLoader(0, null, this);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        ContactsAdapter mAdapter = new ContactsAdapter(mContactList);
+        /*
+        ContactsAdapter mAdapter = new ContactsAdapter(mCursor);
 
         final AppCompatActivity This = this;
 
@@ -77,25 +82,54 @@ public class ContactListActivity extends AppCompatActivity implements LoaderMana
         });
 
         mRecyclerView.setAdapter(mAdapter);
+        */
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
+         /*
+         * Makes search string into pattern and
+         * stores it in the selection array
+         */
+        mSelectionArgs[0] = "%" + mSearchString + "%";
+        // Starts the query
+        return new CursorLoader(
+                this,
+                ContactsContract.Contacts.CONTENT_URI,
+                PROJECTION,
+                null,
+                null,
+                null
+        );
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Put the result Cursor in the adapter for the ListView
 
+        ContactsAdapter mAdapter = new ContactsAdapter(data);
+
+        final AppCompatActivity This = this;
+
+        mAdapter.setOnItemClickListener(new ContactsAdapter.OnItemClickListener() {
+            @Override
+            public void OnItemClick(View view, int position) {
+                Intent intent = new Intent(This, ContactDetailsActivity.class);
+                // Pass data object in the bundle and populate details activity.
+                //intent.putExtra(ContactDetailsActivity.EXTRA_CONTACT, contact);
+                ImageView imageView = (ImageView) view.findViewById(R.id.CircleImageView);
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(This, imageView, "contact_picture");
+                startActivity(intent, options.toBundle());
+            }
+        });
+
+        mRecyclerView.setAdapter(mAdapter);
+        //mCursor = data;
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        // Delete the reference to the existing Cursor
+        mCursor = null;
     }
 }
