@@ -1,21 +1,37 @@
 package net.henriqueof.contactlist;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
+import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.TransitionInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactListActivity extends AppCompatActivity {
+public class ContactListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
+
+    /*
+     * Defines an array that contains column names to move from
+     * the Cursor to the ListView.
+     */
+    @SuppressLint("InlinedApi")
+    private final static String[] FROM_COLUMNS = {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
+                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
+                    ContactsContract.Contacts.DISPLAY_NAME
+    };
+
     RecyclerView mRecyclerView = null;
     List<Contact> mContactList = null;
 
@@ -46,11 +62,31 @@ public class ContactListActivity extends AppCompatActivity {
                     // Pass data object in the bundle and populate details activity.
                     //intent.putExtra(ContactDetailsActivity.EXTRA_CONTACT, contact);
                     ImageView imageView = (ImageView) view.findViewById(R.id.CircleImageView);
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(This, (View) imageView, "contact_picture");
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(This, imageView, "contact_picture");
                     startActivity(intent, options.toBundle());
             }
         });
 
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
     }
 }
