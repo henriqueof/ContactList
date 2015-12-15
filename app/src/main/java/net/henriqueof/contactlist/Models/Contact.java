@@ -1,4 +1,4 @@
-package net.henriqueof.contactlist;
+package net.henriqueof.contactlist.Models;
 
 /**
  * Created by henri on 06/12/2015.

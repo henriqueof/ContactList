@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.henriqueof.contactlist;
+package net.henriqueof.contactlist.Helpers;
 
 import android.content.Context;
 import android.content.res.TypedArray;
