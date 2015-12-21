@@ -16,7 +16,7 @@ public final class ContactContract {
 
     // Groups table
     public class Group implements BaseColumns {
-        public static final String TABLE_NAME = "group";
+        public static final String TABLE_NAME = "groups";
         public static final String COLUMN_NAME_GROUP_NAME = "name";
     }
 
@@ -39,6 +39,7 @@ public final class ContactContract {
     public class Phone {
         public static final String TABLE_NAME = "phone";
         public static final String COLUMN_NAME_CONTACT_ID = "contact_id";
+        public static final String COLUMN_NAME_TYPE = "type";
         public static final String COLUMN_NAME_NUMBER = "number";
 
     }
